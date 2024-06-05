@@ -30,7 +30,9 @@ trait MultiselectBelongsToSupport
         $this->resolveUsing(function ($value) use ($async, $resourceClass) {
             $keyName = $this->keyName ?? $resourceClass::newModel()->getKeyName();
 
-            if ($async) $this->associatableResource($resourceClass);
+            if ($async) {
+                $this->associatableResource($resourceClass);
+            }
 
             $request = app(NovaRequest::class);
             $value = $value->{$keyName} ?? null;
@@ -94,7 +96,9 @@ trait MultiselectBelongsToSupport
         $this->resourceClass = $resourceClass;
 
         $this->resolveUsing(function ($value) use ($async, $resourceClass) {
-            if ($async) $this->associatableResource($resourceClass);
+            if ($async) {
+                $this->associatableResource($resourceClass);
+            }
 
             $value = $value ?: collect();
             $request = app(NovaRequest::class);
@@ -106,7 +110,11 @@ trait MultiselectBelongsToSupport
 
             $this->setOptionsFromModels($models, $resourceClass);
 
-            return $value->map(fn ($model) => $model->{$this->keyName ?? $model->getKeyName()})->toArray();
+            return $value->map(
+                function ($model) {
+                    return $model->{$this->keyName ?? $model->getKeyName()};
+                }
+            )->toArray();
         });
 
         $this->fillUsing(function ($request, $model, $requestAttribute, $attribute) {
